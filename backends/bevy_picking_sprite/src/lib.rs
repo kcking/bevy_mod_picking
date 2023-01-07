@@ -42,6 +42,7 @@ pub fn sprite_picking(
         Option<&FocusPolicy>,
     )>,
     mut output: EventWriter<EntitiesUnderPointer>,
+    manual_texture_views: Res<bevy::render::camera::ManualTextureViews>,
 ) {
     for (pointer, location) in pointers.iter().filter_map(|(pointer, pointer_location)| {
         pointer_location.location().map(|loc| (pointer, loc))
@@ -69,9 +70,11 @@ pub fn sprite_picking(
 
                     let anchor_offset = sprite.anchor.as_vec() * extents;
 
-                    let target = if let Some(t) =
-                        location.target.get_render_target_info(&windows, &images)
-                    {
+                    let target = if let Some(t) = location.target.get_render_target_info(
+                        &windows,
+                        &images,
+                        &manual_texture_views,
+                    ) {
                         t.physical_size.as_vec2() / t.scale_factor as f32
                     } else {
                         return None;
